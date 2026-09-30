@@ -29,9 +29,9 @@ public class DashboardController : Controller
 
     [HttpGet("/Dashboard")]
     [HttpGet("/Dashboard/Index")]
-    public async Task<IActionResult> Index(string? vista, DateOnly? fecha, int? categoriaId)
+    public async Task<IActionResult> Index(string? vista, DateOnly? fecha, int? categoriaId, int pagina = 1)
     {
-        var model = await _dashboard.ConstruirAsync(vista, fecha, categoriaId);
+        var model = await _dashboard.ConstruirAsync(vista, fecha, categoriaId, pagina);
         return View(model);
     }
 

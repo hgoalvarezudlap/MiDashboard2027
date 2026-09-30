@@ -65,7 +65,7 @@ public class RegistrosController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> Editar(int id, string? vista, DateOnly? fecha, int? categoriaId)
+    public async Task<IActionResult> Editar(int id, string? vista, DateOnly? fecha, int? categoriaId, int pagina = 1)
     {
         var registro = await _registros.ObtenerAsync(id);
         if (registro is null)
@@ -84,6 +84,7 @@ public class RegistrosController : Controller
             Vista = vista,
             FechaVista = fecha,
             FiltroCategoriaId = categoriaId,
+            Pagina = pagina,
         };
         ViewBag.Categorias = await _categorias.ListarAsync();
         return PartialView("_FormRegistro", form);
@@ -112,16 +113,16 @@ public class RegistrosController : Controller
             return NotFound();
         }
 
-        var model = await _dashboard.ConstruirAsync(form.Vista, form.FechaVista, form.FiltroCategoriaId);
+        var model = await _dashboard.ConstruirAsync(form.Vista, form.FechaVista, form.FiltroCategoriaId, form.Pagina);
         return PartialView(VistaContenidoOob, model);
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Eliminar(int id, string? vista, DateOnly? fecha, int? categoriaId)
+    public async Task<IActionResult> Eliminar(int id, string? vista, DateOnly? fecha, int? categoriaId, int pagina = 1)
     {
         await _registros.EliminarAsync(id);
-        var model = await _dashboard.ConstruirAsync(vista, fecha, categoriaId);
+        var model = await _dashboard.ConstruirAsync(vista, fecha, categoriaId, pagina);
         return PartialView(VistaContenido, model);
     }
 

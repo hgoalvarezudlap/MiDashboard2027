@@ -5,6 +5,8 @@ namespace Dashboard.Services;
 
 public class DashboardService
 {
+    public const int RegistrosPorPagina = 10;
+
     private readonly RegistroRepository _registros;
     private readonly CategoriaRepository _categorias;
     private readonly PeriodoService _periodos;
@@ -20,6 +22,7 @@ public class DashboardService
         string? vistaSlug,
         DateOnly? fecha,
         int? categoriaId,
+        int pagina = 1,
         RegistroFormModel? captura = null)
     {
         var hoy = _periodos.Hoy();
@@ -35,7 +38,8 @@ public class DashboardService
 
         var total = await _registros.TotalMinutosAsync(periodo.Desde, periodo.Hasta, categoriaId);
         var distribucion = await _registros.DistribucionAsync(periodo.Desde, periodo.Hasta, categoriaId);
-        var registros = await _registros.ListarAsync(periodo.Desde, periodo.Hasta, categoriaId);
+        var (registros, totalRegistros, paginaActual, totalPaginas, usaPaginacion) =
+            await ListarRegistrosAsync(vista, periodo, categoriaId, pagina);
 
         var desglose = new List<TotalPorDia>();
         var minutosFinDeSemana = 0;
@@ -72,9 +76,37 @@ public class DashboardService
             DesgloseDiario = desglose,
             MinutosFinDeSemana = minutosFinDeSemana,
             Registros = registros,
+            TotalRegistros = totalRegistros,
+            Pagina = paginaActual,
+            TotalPaginas = totalPaginas,
+            RegistrosPorPagina = RegistrosPorPagina,
+            UsaPaginacion = usaPaginacion,
             Captura = captura,
             Anterior = _periodos.Anterior(vista, referencia),
             Siguiente = _periodos.Siguiente(vista, referencia),
         };
+    }
+
+    private async Task<(IReadOnlyList<Registro> Registros, int Total, int Pagina, int TotalPaginas, bool UsaPaginacion)>
+        ListarRegistrosAsync(VistaPeriodo vista, Periodo periodo, int? categoriaId, int pagina)
+    {
+        if (vista == VistaPeriodo.Dia)
+        {
+            var todos = await _registros.ListarAsync(periodo.Desde, periodo.Hasta, categoriaId);
+            return (todos, todos.Count, 1, 1, false);
+        }
+
+        var total = await _registros.ContarAsync(periodo.Desde, periodo.Hasta, categoriaId);
+        if (total == 0)
+        {
+            return ([], 0, 1, 1, true);
+        }
+
+        var totalPaginas = (int)Math.Ceiling(total / (double)RegistrosPorPagina);
+        var paginaActual = Math.Clamp(pagina, 1, totalPaginas);
+        var offset = (paginaActual - 1) * RegistrosPorPagina;
+        var paginaRegistros = await _registros.ListarPaginaAsync(
+            periodo.Desde, periodo.Hasta, categoriaId, offset, RegistrosPorPagina);
+        return (paginaRegistros, total, paginaActual, totalPaginas, true);
     }
 }

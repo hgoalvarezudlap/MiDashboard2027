@@ -36,6 +36,11 @@ public class DashboardViewModel
     public IReadOnlyList<TotalPorDia> DesgloseDiario { get; set; } = [];
     public int MinutosFinDeSemana { get; set; }
     public IReadOnlyList<Registro> Registros { get; set; } = [];
+    public int TotalRegistros { get; set; }
+    public int Pagina { get; set; } = 1;
+    public int TotalPaginas { get; set; } = 1;
+    public int RegistrosPorPagina { get; set; }
+    public bool UsaPaginacion { get; set; }
 
     public RegistroFormModel Captura { get; set; } = new();
 

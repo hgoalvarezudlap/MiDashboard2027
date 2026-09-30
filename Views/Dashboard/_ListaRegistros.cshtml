@@ -52,11 +52,11 @@
                                 <td class="max-w-xs truncate text-base-content/70" title="@r.Comentarios">@r.Comentarios</td>
                                 <td class="whitespace-nowrap text-right">
                                     <button type="button" class="btn btn-ghost btn-xs"
-                                            hx-get="@Url.Action("Editar", "Registros", new { id = r.RegistroId, vista = slug, fecha = fechaRef, categoriaId = Model.FiltroCategoriaId })"
+                                            hx-get="@Url.Action("Editar", "Registros", new { id = r.RegistroId, vista = slug, fecha = fechaRef, categoriaId = Model.FiltroCategoriaId, pagina = Model.Pagina })"
                                             hx-target="#modal-contenedor"
                                             hx-swap="innerHTML">Editar</button>
                                     <button type="button" class="btn btn-ghost btn-xs text-error"
-                                            hx-post="@Url.Action("Eliminar", "Registros", new { id = r.RegistroId, vista = slug, fecha = fechaRef, categoriaId = Model.FiltroCategoriaId })"
+                                            hx-post="@Url.Action("Eliminar", "Registros", new { id = r.RegistroId, vista = slug, fecha = fechaRef, categoriaId = Model.FiltroCategoriaId, pagina = Model.Pagina })"
                                             hx-confirm="¿Eliminar el registro «@r.Tarea»? Esta acción no se puede deshacer."
                                             hx-target="#dashboard-contenido"
                                             hx-swap="innerHTML">Eliminar</button>
@@ -66,6 +66,35 @@
                     </tbody>
                 </table>
             </div>
+            @if (Model.UsaPaginacion && Model.TotalPaginas > 1)
+            {
+                var inicio = (Model.Pagina - 1) * Model.RegistrosPorPagina + 1;
+                var fin = inicio + Model.Registros.Count - 1;
+                <div class="mt-4 flex flex-wrap items-center justify-between gap-3">
+                    <p class="text-sm text-base-content/70">@inicio–@fin de @Model.TotalRegistros</p>
+                    <nav class="join" aria-label="Páginas de registros">
+                        @if (Model.Pagina > 1)
+                        {
+                            <a class="btn btn-sm join-item" aria-label="Página anterior"
+                               asp-controller="Dashboard" asp-action="Index" asp-route-vista="@slug" asp-route-fecha="@fechaRef" asp-route-categoriaId="@Model.FiltroCategoriaId" asp-route-pagina="@(Model.Pagina - 1)">&lsaquo;</a>
+                        }
+                        else
+                        {
+                            <span class="btn btn-sm join-item btn-disabled" aria-disabled="true">&lsaquo;</span>
+                        }
+                        <span class="btn btn-sm join-item btn-disabled">@Model.Pagina / @Model.TotalPaginas</span>
+                        @if (Model.Pagina < Model.TotalPaginas)
+                        {
+                            <a class="btn btn-sm join-item" aria-label="Página siguiente"
+                               asp-controller="Dashboard" asp-action="Index" asp-route-vista="@slug" asp-route-fecha="@fechaRef" asp-route-categoriaId="@Model.FiltroCategoriaId" asp-route-pagina="@(Model.Pagina + 1)">&rsaquo;</a>
+                        }
+                        else
+                        {
+                            <span class="btn btn-sm join-item btn-disabled" aria-disabled="true">&rsaquo;</span>
+                        }
+                    </nav>
+                </div>
+            }
         }
     </div>
 </section>

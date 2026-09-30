@@ -39,6 +39,30 @@ public class RegistroRepository
         return rows.ToList();
     }
 
+    public Task<int> ContarAsync(DateOnly desde, DateOnly hasta, int? categoriaId)
+    {
+        const string sql = """
+            SELECT COUNT(*)
+              FROM dbo.RT_Registro
+             WHERE Fecha BETWEEN @desde AND @hasta
+               AND (@categoriaId IS NULL OR CategoriaId = @categoriaId);
+            """;
+        return _db.ExecuteScalarAsync<int>(sql, new { desde, hasta, categoriaId });
+    }
+
+    public async Task<IReadOnlyList<Registro>> ListarPaginaAsync(
+        DateOnly desde, DateOnly hasta, int? categoriaId, int offset, int tamano)
+    {
+        var sql = SelectRegistro + """
+             WHERE r.Fecha BETWEEN @desde AND @hasta
+               AND (@categoriaId IS NULL OR r.CategoriaId = @categoriaId)
+             ORDER BY r.Fecha DESC, r.FechaCreacion DESC, r.RegistroId DESC
+             OFFSET @offset ROWS FETCH NEXT @tamano ROWS ONLY;
+            """;
+        var rows = await _db.QueryAsync<Registro>(sql, new { desde, hasta, categoriaId, offset, tamano });
+        return rows.ToList();
+    }
+
     public Task<int> TotalMinutosAsync(DateOnly desde, DateOnly hasta, int? categoriaId)
     {
         const string sql = """

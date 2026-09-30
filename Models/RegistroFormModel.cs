@@ -32,6 +32,7 @@ public class RegistroFormModel : IValidatableObject
     public string? Vista { get; set; }
     public DateOnly? FechaVista { get; set; }
     public int? FiltroCategoriaId { get; set; }
+    public int Pagina { get; set; } = 1;
 
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
