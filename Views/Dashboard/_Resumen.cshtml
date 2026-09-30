@@ -1,0 +1,103 @@
+@using System.Text.Json
+@model DashboardViewModel
+@{
+    var vista = Model.Periodo.Vista;
+    var datosDistribucion = Model.Distribucion.Select(d => new
+    {
+        name = d.Nombre,
+        value = Math.Round(d.Minutos / 60m, 2),
+        minutos = d.Minutos,
+        porcentaje = d.Porcentaje,
+        itemStyle = new { color = d.Color },
+    });
+    var datosDias = Model.DesgloseDiario.Select(d => new
+    {
+        etiqueta = TiempoFormato.DiaCorto(d.Fecha),
+        fecha = d.Fecha.ToString("yyyy-MM-dd"),
+        horas = Math.Round(d.Minutos / 60m, 2),
+        minutos = d.Minutos,
+    });
+    var datos = new { distribucion = datosDistribucion, dias = datosDias, vista = PeriodoService.VistaSlug(vista) };
+    var json = JsonSerializer.Serialize(datos);
+}
+
+<section class="mb-6 grid gap-4 lg:grid-cols-12">
+    <div class="stats bg-base-100 shadow lg:col-span-3 lg:stats-vertical">
+        <div class="stat">
+            <div class="stat-title">Total del periodo</div>
+            <div class="stat-value text-primary">@TiempoFormato.Horas(Model.TotalMinutos)</div>
+            <div class="stat-desc">@Model.Registros.Count registro@(Model.Registros.Count == 1 ? "" : "s")</div>
+        </div>
+        @if (vista == VistaPeriodo.Semana && Model.MinutosFinDeSemana > 0)
+        {
+            <div class="stat">
+                <div class="stat-title">Fin de semana</div>
+                <div class="stat-value text-lg">+@TiempoFormato.Horas(Model.MinutosFinDeSemana)</div>
+                <div class="stat-desc">Incluido en el total, no en el desglose diario</div>
+            </div>
+        }
+        @if (Model.Distribucion.Count > 0)
+        {
+            <div class="stat">
+                <div class="stat-title">Categorías</div>
+                <div class="stat-value text-lg">@Model.Distribucion.Count</div>
+                <div class="stat-desc">con actividad en el periodo</div>
+            </div>
+        }
+    </div>
+
+    <div class="card bg-base-100 shadow @(vista == VistaPeriodo.Dia ? "lg:col-span-9" : "lg:col-span-4")">
+        <div class="card-body">
+            <h2 class="card-title text-base">Distribución por categoría</h2>
+            @if (Model.Distribucion.Count == 0)
+            {
+                <p class="py-8 text-center text-sm text-base-content/60">Sin registros en este periodo.</p>
+            }
+            else
+            {
+                <div class="@(vista == VistaPeriodo.Dia ? "grid gap-4 md:grid-cols-2" : "")">
+                    <div id="grafica-distribucion" class="h-56 w-full"></div>
+                    <ul class="flex flex-col gap-1 text-sm">
+                        @foreach (var d in Model.Distribucion)
+                        {
+                            <li class="flex items-center justify-between gap-3">
+                                <span class="flex items-center gap-2">
+                                    <span class="inline-block size-3 rounded-full" style="background-color: @d.Color"></span>
+                                    @d.Nombre
+                                </span>
+                                <span class="whitespace-nowrap text-base-content/70">
+                                    @TiempoFormato.Horas(d.Minutos) · @d.Porcentaje.ToString("0.#")%
+                                </span>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            }
+        </div>
+    </div>
+
+    @if (vista != VistaPeriodo.Dia)
+    {
+        <div class="card bg-base-100 shadow lg:col-span-5">
+            <div class="card-body">
+                <h2 class="card-title text-base">
+                    @(vista == VistaPeriodo.Semana ? "Horas por día (lunes a viernes)" : "Horas por día")
+                </h2>
+                @if (Model.TotalMinutos == 0)
+                {
+                    <p class="py-8 text-center text-sm text-base-content/60">Sin registros en este periodo.</p>
+                }
+                else
+                {
+                    <div id="grafica-dias" class="h-56 w-full"></div>
+                    @if (vista == VistaPeriodo.Semana && Model.MinutosFinDeSemana > 0)
+                    {
+                        <p class="text-xs text-base-content/60">+@TiempoFormato.Horas(Model.MinutosFinDeSemana) en fin de semana</p>
+                    }
+                }
+            </div>
+        </div>
+    }
+</section>
+
+<script type="application/json" id="datos-dashboard">@Html.Raw(json)</script>

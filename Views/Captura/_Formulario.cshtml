@@ -1,0 +1,85 @@
+@model RegistroFormModel
+@{
+    var categorias = ViewBag.Categorias as IReadOnlyList<Categoria> ?? [];
+    var opciones = TiempoFormato.OpcionesTiempo()
+        .Select(o => new SelectListItem(o.Texto, o.Minutos.ToString(), Model.Minutos == o.Minutos))
+        .ToList();
+    var exito = ViewBag.Exito as string;
+    var enlaceDia = ViewBag.EnlaceDia as string;
+}
+
+<form id="captura-formulario"
+      method="post"
+      asp-controller="Registros"
+      asp-action="Crear"
+      class="card bg-base-100 shadow-sm"
+      hx-post="@Url.Action("Crear", "Registros")"
+      hx-target="#captura-formulario"
+      hx-swap="outerHTML"
+      autocomplete="off">
+    <div class="card-body gap-6 p-6 sm:p-8">
+        @if (!string.IsNullOrEmpty(exito))
+        {
+            <div role="status" class="alert alert-success text-sm" data-captura-exito>
+                <span>
+                    Registrado: @exito.
+                    @if (!string.IsNullOrEmpty(enlaceDia))
+                    {
+                        <a class="link font-semibold" href="@enlaceDia">Ver ese día</a>
+                    }
+                </span>
+            </div>
+        }
+
+        <div asp-validation-summary="ModelOnly" class="text-sm text-error"></div>
+
+        <label class="flex flex-col gap-2">
+            <span class="text-sm font-semibold">Tarea</span>
+            <input asp-for="Tarea" class="input input-lg w-full" placeholder="¿Qué hiciste?" list="sugerencias-tarea" maxlength="200" autofocus
+                   hx-get="@Url.Action("Sugerencias", "Registros")"
+                   hx-trigger="input changed delay:250ms"
+                   hx-target="#sugerencias-tarea"
+                   hx-swap="outerHTML"
+                   hx-sync="this:replace" />
+            <datalist id="sugerencias-tarea"></datalist>
+            <span asp-validation-for="Tarea" class="text-sm text-error"></span>
+        </label>
+
+        <div class="grid gap-5 sm:grid-cols-3">
+            <label class="flex flex-col gap-2">
+                <span class="text-sm font-semibold">Tiempo</span>
+                <select asp-for="Minutos" class="select w-full" asp-items="opciones">
+                    <option value="">Selecciona</option>
+                </select>
+                <span asp-validation-for="Minutos" class="text-sm text-error"></span>
+            </label>
+
+            <label class="flex flex-col gap-2">
+                <span class="text-sm font-semibold">Fecha</span>
+                <input asp-for="Fecha" type="date" class="input w-full" />
+                <span asp-validation-for="Fecha" class="text-sm text-error"></span>
+            </label>
+
+            <label class="flex flex-col gap-2">
+                <span class="text-sm font-semibold">Categoría</span>
+                <select asp-for="CategoriaId" class="select w-full">
+                    <option value="">Sin categoría</option>
+                    @foreach (var c in categorias.Where(c => !c.EsPredeterminada))
+                    {
+                        <option value="@c.CategoriaId">@c.Nombre</option>
+                    }
+                </select>
+            </label>
+        </div>
+
+        <details class="rounded-box border border-base-300 bg-base-200/40" open="@(string.IsNullOrWhiteSpace(Model.Comentarios) ? null : "open")">
+            <summary class="cursor-pointer px-4 py-3 text-sm font-semibold">Comentarios, si hacen falta</summary>
+            <div class="px-4 pb-4">
+                <textarea asp-for="Comentarios" class="textarea w-full" rows="3" maxlength="1000" placeholder="Notas breves"></textarea>
+                <span asp-validation-for="Comentarios" class="text-sm text-error"></span>
+            </div>
+        </details>
+
+        <button type="submit" class="btn btn-primary btn-lg">Registrar</button>
+    </div>
+</form>

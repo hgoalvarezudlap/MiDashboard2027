@@ -1,0 +1,99 @@
+@model CategoriaFormModel
+@{
+    var categorias = ViewBag.Categorias as IReadOnlyList<Categoria> ?? [];
+    var error = TempData["Error"] as string;
+}
+
+<div class="mb-6">
+    <h1 class="text-2xl font-bold">Categorías</h1>
+    <p class="mt-1 text-sm text-base-content/70">Nombre y color únicos. Al eliminar una categoría, sus registros pasan a «Sin categoría».</p>
+</div>
+
+@if (!string.IsNullOrEmpty(error))
+{
+    <div role="alert" class="alert alert-error mb-4 text-sm">@error</div>
+}
+
+<div class="grid gap-6 lg:grid-cols-12">
+    <section class="card bg-base-100 shadow lg:col-span-4">
+        <form class="card-body gap-3"
+              hx-post="@Url.Action("Crear", "Categorias")"
+              hx-target="#categorias-contenido"
+              hx-swap="innerHTML"
+              autocomplete="off">
+            <h2 class="card-title text-base">Nueva categoría</h2>
+            <div asp-validation-summary="ModelOnly" class="text-sm text-error"></div>
+
+            <label class="flex flex-col gap-1">
+                <span class="text-xs font-semibold uppercase text-base-content/60">Nombre</span>
+                <input asp-for="Nombre" class="input w-full" maxlength="100" placeholder="Docencia, Investigación…" />
+                <span asp-validation-for="Nombre" class="text-xs text-error"></span>
+            </label>
+
+            <label class="flex flex-col gap-1">
+                <span class="text-xs font-semibold uppercase text-base-content/60">Color</span>
+                <div class="flex items-center gap-3">
+                    <input asp-for="Color" type="color" class="h-10 w-14 cursor-pointer rounded border border-base-300 bg-base-100 p-1" />
+                    <span class="font-mono text-sm uppercase text-base-content/70">@Model.Color</span>
+                </div>
+                <span asp-validation-for="Color" class="text-xs text-error"></span>
+            </label>
+
+            <div class="card-actions justify-end">
+                <button type="submit" class="btn btn-primary">Agregar</button>
+            </div>
+        </form>
+    </section>
+
+    <section class="card bg-base-100 shadow lg:col-span-8">
+        <div class="card-body">
+            <h2 class="card-title text-base">Catálogo</h2>
+            <div class="overflow-x-auto">
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th>Color</th>
+                            <th>Nombre</th>
+                            <th class="text-right">Registros</th>
+                            <th class="text-right">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var c in categorias)
+                        {
+                            <tr>
+                                <td>
+                                    <span class="inline-flex items-center gap-2">
+                                        <span class="inline-block size-5 rounded" style="background-color: @c.Color"></span>
+                                        <span class="font-mono text-xs uppercase text-base-content/60">@c.Color</span>
+                                    </span>
+                                </td>
+                                <td class="font-medium">
+                                    @c.Nombre
+                                    @if (c.EsPredeterminada)
+                                    {
+                                        <span class="badge badge-ghost badge-xs ml-1">predeterminada</span>
+                                    }
+                                </td>
+                                <td class="text-right">@c.TotalRegistros</td>
+                                <td class="whitespace-nowrap text-right">
+                                    <button type="button" class="btn btn-ghost btn-xs"
+                                            hx-get="@Url.Action("Editar", "Categorias", new { id = c.CategoriaId })"
+                                            hx-target="#modal-contenedor"
+                                            hx-swap="innerHTML">Editar</button>
+                                    @if (!c.EsPredeterminada)
+                                    {
+                                        <button type="button" class="btn btn-ghost btn-xs text-error"
+                                                hx-get="@Url.Action("ConfirmarEliminar", "Categorias", new { id = c.CategoriaId })"
+                                                hx-target="#modal-contenedor"
+                                                hx-swap="innerHTML">Eliminar</button>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+</div>

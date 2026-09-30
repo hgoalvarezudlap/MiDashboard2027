@@ -1,0 +1,71 @@
+@model DashboardViewModel
+@{
+    var slug = PeriodoService.VistaSlug(Model.Periodo.Vista);
+    var fechaRef = Model.Periodo.Referencia.ToString("yyyy-MM-dd");
+    var mostrarFecha = Model.Periodo.Vista != VistaPeriodo.Dia;
+}
+
+<section class="card bg-base-100 shadow">
+    <div class="card-body">
+        <h2 class="card-title text-base">Registros</h2>
+        @if (Model.Registros.Count == 0)
+        {
+            <p class="py-6 text-center text-sm text-base-content/60">No hay registros en este periodo.</p>
+        }
+        else
+        {
+            <div class="overflow-x-auto">
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            @if (mostrarFecha)
+                            {
+                                <th>Fecha</th>
+                            }
+                            <th>Tarea</th>
+                            <th>Categoría</th>
+                            <th class="text-right">Tiempo</th>
+                            <th>Comentarios</th>
+                            <th class="text-right">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var r in Model.Registros)
+                        {
+                            var finDeSemana = PeriodoService.EsFinDeSemana(r.Fecha);
+                            <tr>
+                                @if (mostrarFecha)
+                                {
+                                    <td class="whitespace-nowrap">
+                                        @TiempoFormato.DiaCorto(r.Fecha)
+                                        @if (finDeSemana)
+                                        {
+                                            <span class="badge badge-ghost badge-xs ml-1">fin de semana</span>
+                                        }
+                                    </td>
+                                }
+                                <td class="font-medium">@r.Tarea</td>
+                                <td>
+                                    <span class="badge badge-sm gap-1 border-0 text-white" style="background-color: @r.CategoriaColor">@r.CategoriaNombre</span>
+                                </td>
+                                <td class="whitespace-nowrap text-right">@TiempoFormato.Horas(r.Minutos)</td>
+                                <td class="max-w-xs truncate text-base-content/70" title="@r.Comentarios">@r.Comentarios</td>
+                                <td class="whitespace-nowrap text-right">
+                                    <button type="button" class="btn btn-ghost btn-xs"
+                                            hx-get="@Url.Action("Editar", "Registros", new { id = r.RegistroId, vista = slug, fecha = fechaRef, categoriaId = Model.FiltroCategoriaId })"
+                                            hx-target="#modal-contenedor"
+                                            hx-swap="innerHTML">Editar</button>
+                                    <button type="button" class="btn btn-ghost btn-xs text-error"
+                                            hx-post="@Url.Action("Eliminar", "Registros", new { id = r.RegistroId, vista = slug, fecha = fechaRef, categoriaId = Model.FiltroCategoriaId })"
+                                            hx-confirm="¿Eliminar el registro «@r.Tarea»? Esta acción no se puede deshacer."
+                                            hx-target="#dashboard-contenido"
+                                            hx-swap="innerHTML">Eliminar</button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</section>

@@ -1,0 +1,49 @@
+@import "tailwindcss";
+@source "../../Views";
+@source "../js";
+
+@plugin "daisyui" {
+  themes: light --default;
+}
+
+@plugin "daisyui/theme" {
+  name: "light";
+  default: true;
+  --color-primary: #f47a20;
+  --color-primary-content: #ffffff;
+  --color-secondary: #154734;
+  --color-secondary-content: #ffffff;
+  --color-accent: #00b2a9;
+  --color-accent-content: #08332f;
+}
+
+@theme {
+  --font-sans: "Source Sans 3", ui-sans-serif, system-ui, sans-serif;
+}
+
+[x-cloak] {
+  display: none !important;
+}
+
+.tabulator {
+  border: 1px solid var(--color-base-300);
+  border-radius: var(--radius-box);
+  background-color: var(--color-base-100);
+  font-size: 0.95rem;
+  overflow: hidden;
+}
+
+.tabulator .tabulator-header,
+.tabulator .tabulator-header .tabulator-col {
+  background-color: var(--color-primary);
+  color: var(--color-primary-content);
+  border-color: transparent;
+}
+
+.tabulator .tabulator-header .tabulator-col .tabulator-col-content .tabulator-col-title {
+  color: var(--color-primary-content);
+}
+
+.tabulator .tabulator-row.tabulator-selectable:hover {
+  background-color: #fff4eb;
+}

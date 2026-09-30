@@ -1,0 +1,68 @@
+@model RegistroFormModel
+@{
+    var categorias = ViewBag.Categorias as IReadOnlyList<Categoria> ?? [];
+    var opciones = TiempoFormato.OpcionesTiempo()
+        .Select(o => new SelectListItem(o.Texto, o.Minutos.ToString(), Model.Minutos == o.Minutos))
+        .ToList();
+}
+
+<div class="modal modal-open" role="dialog" aria-modal="true" aria-labelledby="titulo-editar">
+    <div class="modal-box max-w-lg">
+        <form class="flex flex-col gap-3"
+              hx-post="@Url.Action("Editar", "Registros")"
+              hx-target="#modal-contenedor"
+              hx-swap="innerHTML"
+              autocomplete="off">
+            <input type="hidden" asp-for="RegistroId" />
+            <input type="hidden" asp-for="Vista" />
+            <input type="hidden" asp-for="FechaVista" />
+            <input type="hidden" asp-for="FiltroCategoriaId" />
+
+            <h3 id="titulo-editar" class="text-lg font-bold">Editar registro</h3>
+            <div asp-validation-summary="ModelOnly" class="text-sm text-error"></div>
+
+            <label class="flex flex-col gap-1">
+                <span class="text-xs font-semibold uppercase text-base-content/60">Tarea</span>
+                <input asp-for="Tarea" class="input w-full" maxlength="200" />
+                <span asp-validation-for="Tarea" class="text-xs text-error"></span>
+            </label>
+
+            <div class="grid gap-3 sm:grid-cols-2">
+                <label class="flex flex-col gap-1">
+                    <span class="text-xs font-semibold uppercase text-base-content/60">Tiempo</span>
+                    <select asp-for="Minutos" class="select w-full" asp-items="opciones">
+                        <option value="">Tiempo</option>
+                    </select>
+                    <span asp-validation-for="Minutos" class="text-xs text-error"></span>
+                </label>
+                <label class="flex flex-col gap-1">
+                    <span class="text-xs font-semibold uppercase text-base-content/60">Fecha</span>
+                    <input asp-for="Fecha" type="date" class="input w-full" />
+                    <span asp-validation-for="Fecha" class="text-xs text-error"></span>
+                </label>
+            </div>
+
+            <label class="flex flex-col gap-1">
+                <span class="text-xs font-semibold uppercase text-base-content/60">Categoría</span>
+                <select asp-for="CategoriaId" class="select w-full">
+                    @foreach (var c in categorias)
+                    {
+                        <option value="@c.CategoriaId" selected="@(Model.CategoriaId == c.CategoriaId)">@c.Nombre</option>
+                    }
+                </select>
+            </label>
+
+            <label class="flex flex-col gap-1">
+                <span class="text-xs font-semibold uppercase text-base-content/60">Comentarios</span>
+                <textarea asp-for="Comentarios" class="textarea w-full" rows="3" maxlength="1000"></textarea>
+                <span asp-validation-for="Comentarios" class="text-xs text-error"></span>
+            </label>
+
+            <div class="modal-action">
+                <button type="button" class="btn btn-ghost" onclick="document.getElementById('modal-contenedor').innerHTML = ''">Cancelar</button>
+                <button type="submit" class="btn btn-primary">Guardar</button>
+            </div>
+        </form>
+    </div>
+    <div class="modal-backdrop" onclick="document.getElementById('modal-contenedor').innerHTML = ''"></div>
+</div>

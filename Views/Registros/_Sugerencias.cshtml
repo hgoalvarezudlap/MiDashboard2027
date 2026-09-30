@@ -1,0 +1,7 @@
+@model IReadOnlyList<string>
+<datalist id="sugerencias-tarea">
+    @foreach (var s in Model)
+    {
+        <option value="@s"></option>
+    }
+</datalist>

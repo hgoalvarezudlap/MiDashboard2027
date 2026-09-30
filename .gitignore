@@ -1,0 +1,28 @@
+# Compilación de .NET
+bin/
+obj/
+*.user
+*.suo
+*.userosscache
+*.rsuser
+.vs/
+
+# Publicación
+publish/
+*.pubxml
+*.pubxml.user
+
+# Node
+node_modules/
+npm-debug.log*
+
+# Secretos locales (appsettings.json y appsettings.Development.json sí se versionan)
+appsettings.*.local.json
+secrets.json
+
+# IDE y sistema
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+*.log

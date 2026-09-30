@@ -1,0 +1,45 @@
+@model CategoriaFormModel
+
+<div class="modal modal-open" role="dialog" aria-modal="true" aria-labelledby="titulo-editar-categoria">
+    <div class="modal-box max-w-md">
+        <form class="flex flex-col gap-3"
+              hx-post="@Url.Action("Editar", "Categorias")"
+              hx-target="#modal-contenedor"
+              hx-swap="innerHTML"
+              autocomplete="off">
+            <input type="hidden" asp-for="CategoriaId" />
+
+            <h3 id="titulo-editar-categoria" class="text-lg font-bold">Editar categoría</h3>
+            <div asp-validation-summary="ModelOnly" class="text-sm text-error"></div>
+
+            <label class="flex flex-col gap-1">
+                <span class="text-xs font-semibold uppercase text-base-content/60">Nombre</span>
+                @if (Model.EsPredeterminada)
+                {
+                    <input asp-for="Nombre" class="input w-full" readonly />
+                    <span class="text-xs text-base-content/60">El nombre de la categoría predeterminada no se puede cambiar.</span>
+                }
+                else
+                {
+                    <input asp-for="Nombre" class="input w-full" maxlength="100" />
+                    <span asp-validation-for="Nombre" class="text-xs text-error"></span>
+                }
+            </label>
+
+            <label class="flex flex-col gap-1">
+                <span class="text-xs font-semibold uppercase text-base-content/60">Color</span>
+                <div class="flex items-center gap-3">
+                    <input asp-for="Color" type="color" class="h-10 w-14 cursor-pointer rounded border border-base-300 bg-base-100 p-1" />
+                    <span class="font-mono text-sm uppercase text-base-content/70">@Model.Color</span>
+                </div>
+                <span asp-validation-for="Color" class="text-xs text-error"></span>
+            </label>
+
+            <div class="modal-action">
+                <button type="button" class="btn btn-ghost" onclick="document.getElementById('modal-contenedor').innerHTML = ''">Cancelar</button>
+                <button type="submit" class="btn btn-primary">Guardar</button>
+            </div>
+        </form>
+    </div>
+    <div class="modal-backdrop" onclick="document.getElementById('modal-contenedor').innerHTML = ''"></div>
+</div>

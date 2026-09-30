@@ -1,0 +1,72 @@
+﻿@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Xsrf
+@{
+    var token = Xsrf.GetAndStoreTokens(Context).RequestToken;
+    var controlador = ViewContext.RouteData.Values["controller"]?.ToString();
+}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Registro de Tiempo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&display=swap" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/Dashboard.styles.css" asp-append-version="true" />
+    <script src="~/lib/htmx/htmx.min.js"></script>
+    <script src="~/lib/alpine/alpine.min.js" defer></script>
+    <script src="~/lib/echarts/echarts.min.js"></script>
+    <script src="~/js/dashboard.js" asp-append-version="true" defer></script>
+</head>
+<body class="flex min-h-screen flex-col bg-base-200 text-base-content"
+      hx-boost="true"
+      hx-headers='{"RequestVerificationToken": "@token"}'>
+    <header class="border-b border-base-300 bg-white shadow-sm" x-data="{ open: false }">
+        <div class="mx-auto flex w-full max-w-7xl items-center justify-between gap-4 px-4 py-3">
+            <a class="inline-flex items-center gap-3" asp-controller="Captura" asp-action="Index">
+                <img src="~/images/logo-udlap.png" alt="UDLAP" width="180" height="38" class="h-9 w-auto" asp-append-version="true" />
+                <span class="hidden text-sm font-semibold text-base-content/70 sm:inline">Registro de Tiempo</span>
+            </a>
+            <button type="button"
+                    class="btn btn-ghost btn-sm lg:hidden"
+                    @@click="open = !open"
+                    :aria-expanded="open"
+                    aria-controls="menu-principal">
+                Menú
+            </button>
+            <nav class="hidden items-center gap-1 lg:flex">
+                <a class="btn btn-sm btn-ghost @(controlador == "Captura" ? "btn-active" : "")" asp-controller="Captura" asp-action="Index">Captura</a>
+                <a class="btn btn-sm btn-ghost @(controlador == "Dashboard" ? "btn-active" : "")" asp-controller="Dashboard" asp-action="Index">Dashboard</a>
+                <a class="btn btn-sm btn-ghost @(controlador == "Categorias" ? "btn-active" : "")" asp-controller="Categorias" asp-action="Index">Categorías</a>
+                <form method="post" asp-controller="Account" asp-action="Logout" hx-boost="false">
+                    <button type="submit" class="btn btn-sm btn-ghost">Salir</button>
+                </form>
+            </nav>
+        </div>
+        <nav id="menu-principal" class="border-t border-base-300 px-4 py-2 lg:hidden" x-show="open" x-cloak>
+            <a class="btn btn-ghost btn-block justify-start" asp-controller="Captura" asp-action="Index">Captura</a>
+            <a class="btn btn-ghost btn-block justify-start" asp-controller="Dashboard" asp-action="Index">Dashboard</a>
+            <a class="btn btn-ghost btn-block justify-start" asp-controller="Categorias" asp-action="Index">Categorías</a>
+            <form method="post" asp-controller="Account" asp-action="Logout" hx-boost="false">
+                <button type="submit" class="btn btn-ghost btn-block justify-start">Salir</button>
+            </form>
+        </nav>
+    </header>
+
+    <main class="mx-auto w-full max-w-7xl flex-1 px-4 py-6">
+        @RenderBody()
+    </main>
+
+    <div id="modal-contenedor"></div>
+
+    <footer class="mt-auto border-t border-base-300 bg-base-100">
+        <div class="mx-auto flex w-full max-w-7xl items-center justify-between px-4 py-4 text-sm text-base-content/70">
+            <span>&copy; 2026 Registro de Tiempo</span>
+            <span>@User.Identity?.Name</span>
+        </div>
+    </footer>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

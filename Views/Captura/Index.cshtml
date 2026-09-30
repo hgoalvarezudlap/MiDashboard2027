@@ -1,0 +1,15 @@
+@model RegistroFormModel
+@{
+    ViewData["Title"] = "Captura";
+    var hoy = ViewBag.Hoy as DateOnly? ?? Model.Fecha ?? DateOnly.FromDateTime(DateTime.Today);
+}
+
+<div class="mx-auto w-full max-w-2xl py-6 sm:py-12">
+    <header class="mb-8">
+        <p class="text-sm font-semibold text-primary">@TiempoFormato.FechaLarga(hoy)</p>
+        <h1 class="mt-1 text-3xl font-bold tracking-tight">Registrar tiempo</h1>
+        <p class="mt-2 text-base-content/70">Un registro a la vez. La fecha y la categoría se conservan para el siguiente.</p>
+    </header>
+
+    <partial name="~/Views/Captura/_Formulario.cshtml" model="Model" />
+</div>

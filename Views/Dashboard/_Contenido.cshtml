@@ -1,0 +1,54 @@
+@model DashboardViewModel
+@{
+    var vista = Model.Periodo.Vista;
+    var slug = PeriodoService.VistaSlug(vista);
+    var fechaRef = Model.Periodo.Referencia.ToString("yyyy-MM-dd");
+    var esHoy = Model.Periodo.Desde <= Model.Hoy && Model.Hoy <= Model.Periodo.Hasta;
+}
+
+<section class="mb-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+    <div class="flex flex-wrap items-center gap-3">
+        <div role="tablist" class="tabs tabs-box tabs-sm">
+            <a role="tab" class="tab @(vista == VistaPeriodo.Dia ? "tab-active" : "")"
+               asp-controller="Dashboard" asp-action="Index" asp-route-vista="dia" asp-route-fecha="@fechaRef" asp-route-categoriaId="@Model.FiltroCategoriaId">Día</a>
+            <a role="tab" class="tab @(vista == VistaPeriodo.Semana ? "tab-active" : "")"
+               asp-controller="Dashboard" asp-action="Index" asp-route-vista="semana" asp-route-fecha="@fechaRef" asp-route-categoriaId="@Model.FiltroCategoriaId">Semana</a>
+            <a role="tab" class="tab @(vista == VistaPeriodo.Mes ? "tab-active" : "")"
+               asp-controller="Dashboard" asp-action="Index" asp-route-vista="mes" asp-route-fecha="@fechaRef" asp-route-categoriaId="@Model.FiltroCategoriaId">Mes</a>
+        </div>
+
+        <div class="join">
+            <a class="btn btn-sm join-item" title="Periodo anterior" aria-label="Periodo anterior"
+               asp-controller="Dashboard" asp-action="Index" asp-route-vista="@slug" asp-route-fecha="@Model.Anterior.ToString("yyyy-MM-dd")" asp-route-categoriaId="@Model.FiltroCategoriaId">&lsaquo;</a>
+            <a class="btn btn-sm join-item @(esHoy ? "btn-disabled" : "")"
+               asp-controller="Dashboard" asp-action="Index" asp-route-vista="@slug" asp-route-categoriaId="@Model.FiltroCategoriaId">Hoy</a>
+            <a class="btn btn-sm join-item" title="Periodo siguiente" aria-label="Periodo siguiente"
+               asp-controller="Dashboard" asp-action="Index" asp-route-vista="@slug" asp-route-fecha="@Model.Siguiente.ToString("yyyy-MM-dd")" asp-route-categoriaId="@Model.FiltroCategoriaId">&rsaquo;</a>
+        </div>
+
+        <h1 class="text-lg font-bold">@Model.Periodo.Etiqueta</h1>
+    </div>
+
+    <div class="flex flex-wrap items-center gap-2">
+        <form method="get" asp-controller="Dashboard" asp-action="Index" class="flex items-center gap-2">
+            <input type="hidden" name="vista" value="@slug" />
+            <input type="hidden" name="fecha" value="@fechaRef" />
+            <label class="sr-only" for="filtro-categoria">Filtrar por categoría</label>
+            <select id="filtro-categoria" name="categoriaId" class="select select-sm" onchange="this.form.requestSubmit()">
+                <option value="">Todas las categorías</option>
+                @foreach (var c in Model.Categorias)
+                {
+                    <option value="@c.CategoriaId" selected="@(Model.FiltroCategoriaId == c.CategoriaId)">@c.Nombre</option>
+                }
+            </select>
+        </form>
+        <a class="btn btn-sm btn-outline btn-primary" hx-boost="false"
+           asp-controller="Dashboard" asp-action="Exportar" asp-route-vista="@slug" asp-route-fecha="@fechaRef" asp-route-categoriaId="@Model.FiltroCategoriaId">
+            Exportar Excel
+        </a>
+    </div>
+</section>
+
+<partial name="~/Views/Dashboard/_Resumen.cshtml" model="Model" />
+
+<partial name="~/Views/Dashboard/_ListaRegistros.cshtml" model="Model" />

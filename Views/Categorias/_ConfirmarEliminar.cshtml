@@ -1,0 +1,32 @@
+@model Categoria
+
+<div class="modal modal-open" role="dialog" aria-modal="true" aria-labelledby="titulo-eliminar-categoria">
+    <div class="modal-box max-w-md">
+        <h3 id="titulo-eliminar-categoria" class="text-lg font-bold">Eliminar categoría</h3>
+        <p class="py-3">
+            ¿Eliminar la categoría
+            <span class="badge border-0 text-white" style="background-color: @Model.Color">@Model.Nombre</span>?
+        </p>
+        @if (Model.TotalRegistros > 0)
+        {
+            <div role="alert" class="alert alert-warning text-sm">
+                <span>
+                    <strong>@Model.TotalRegistros registro@(Model.TotalRegistros == 1 ? "" : "s")</strong>
+                    se reasignará@(Model.TotalRegistros == 1 ? "" : "n") a «Sin categoría».
+                </span>
+            </div>
+        }
+        else
+        {
+            <p class="text-sm text-base-content/70">No tiene registros asociados.</p>
+        }
+        <div class="modal-action">
+            <button type="button" class="btn btn-ghost" onclick="document.getElementById('modal-contenedor').innerHTML = ''">Cancelar</button>
+            <button type="button" class="btn btn-error"
+                    hx-post="@Url.Action("Eliminar", "Categorias", new { id = Model.CategoriaId })"
+                    hx-target="#modal-contenedor"
+                    hx-swap="innerHTML">Eliminar</button>
+        </div>
+    </div>
+    <div class="modal-backdrop" onclick="document.getElementById('modal-contenedor').innerHTML = ''"></div>
+</div>

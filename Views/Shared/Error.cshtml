@@ -1,0 +1,28 @@
+﻿@model ErrorViewModel
+@{
+    ViewData["Title"] = "Error";
+}
+
+<div class="card bg-base-100 shadow">
+    <div class="card-body">
+        <h1 class="text-2xl font-bold text-error">Error</h1>
+        <h2 class="text-lg">Ocurrió un error al procesar la solicitud.</h2>
+
+        @if (Model.ShowRequestId)
+        {
+            <p>
+                <strong>Id de solicitud:</strong> <code>@Model.RequestId</code>
+            </p>
+        }
+
+        <h3 class="mt-4 font-semibold">Modo de desarrollo</h3>
+        <p>
+            En el entorno <strong>Development</strong> se muestra más detalle del error.
+        </p>
+        <p>
+            <strong>No actives Development en una aplicación publicada.</strong>
+            Puede mostrar información sensible de las excepciones.
+            Para depurar en local, define la variable <strong>ASPNETCORE_ENVIRONMENT</strong> como <strong>Development</strong> y reinicia la aplicación.
+        </p>
+    </div>
+</div>
