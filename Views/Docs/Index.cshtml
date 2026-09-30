@@ -1,0 +1,39 @@
+@using Dashboard.Controllers
+@model IReadOnlyList<DocsController.GuiaCategoria>
+@{
+    ViewData["Title"] = "Docs";
+}
+
+<div class="mx-auto w-full max-w-4xl">
+    <header class="mb-6">
+        <h1 class="text-2xl font-bold">Docs</h1>
+        <p class="mt-1 text-sm text-base-content/70">Guía para clasificar el tiempo al registrar una tarea.</p>
+    </header>
+
+    <section class="card bg-base-100 shadow">
+        <div class="card-body">
+            <h2 class="card-title text-base">Categorías</h2>
+            <div class="overflow-x-auto">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th class="w-12">#</th>
+                            <th>Categoría</th>
+                            <th>Incluye</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (var i = 0; i < Model.Count; i++)
+                        {
+                            <tr>
+                                <td class="text-base-content/60">@(i + 1)</td>
+                                <td class="whitespace-nowrap font-medium">@Model[i].Nombre</td>
+                                <td>@Model[i].Incluye</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+</div>

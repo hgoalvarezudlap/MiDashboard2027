@@ -14,7 +14,7 @@ public class RegistroFormModel : IValidatableObject
     [Required(ErrorMessage = "Indica el tiempo invertido.")]
     [Range(15, 480, ErrorMessage = "El tiempo debe estar entre 15 minutos y 8 horas.")]
     [Display(Name = "Tiempo")]
-    public int? Minutos { get; set; }
+    public int? Minutos { get; set; } = 60;
 
     [Required(ErrorMessage = "Indica la fecha.")]
     [DataType(DataType.Date)]

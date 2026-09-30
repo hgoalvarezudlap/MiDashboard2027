@@ -39,6 +39,7 @@
                 <a class="btn btn-sm btn-ghost @(controlador == "Captura" ? "btn-active" : "")" asp-controller="Captura" asp-action="Index">Captura</a>
                 <a class="btn btn-sm btn-ghost @(controlador == "Dashboard" ? "btn-active" : "")" asp-controller="Dashboard" asp-action="Index">Dashboard</a>
                 <a class="btn btn-sm btn-ghost @(controlador == "Categorias" ? "btn-active" : "")" asp-controller="Categorias" asp-action="Index">Categorías</a>
+                <a class="btn btn-sm btn-ghost @(controlador == "Docs" ? "btn-active" : "")" asp-controller="Docs" asp-action="Index">Docs</a>
                 <form method="post" asp-controller="Account" asp-action="Logout" hx-boost="false">
                     <button type="submit" class="btn btn-sm btn-ghost">Salir</button>
                 </form>
@@ -48,6 +49,7 @@
             <a class="btn btn-ghost btn-block justify-start" asp-controller="Captura" asp-action="Index">Captura</a>
             <a class="btn btn-ghost btn-block justify-start" asp-controller="Dashboard" asp-action="Index">Dashboard</a>
             <a class="btn btn-ghost btn-block justify-start" asp-controller="Categorias" asp-action="Index">Categorías</a>
+            <a class="btn btn-ghost btn-block justify-start" asp-controller="Docs" asp-action="Index">Docs</a>
             <form method="post" asp-controller="Account" asp-action="Logout" hx-boost="false">
                 <button type="submit" class="btn btn-ghost btn-block justify-start">Salir</button>
             </form>
