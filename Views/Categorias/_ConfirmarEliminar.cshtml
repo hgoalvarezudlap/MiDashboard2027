@@ -5,7 +5,7 @@
         <h3 id="titulo-eliminar-categoria" class="text-lg font-bold">Eliminar categoría</h3>
         <p class="py-3">
             ¿Eliminar la categoría
-            <span class="badge border-0 text-white" style="background-color: @Model.Color">@Model.Nombre</span>?
+            <span class="badge border-0" style="background-color: @Model.Color; color: @ColorTexto.Sobre(Model.Color)">@Model.Nombre</span>?
         </p>
         @if (Model.TotalRegistros > 0)
         {

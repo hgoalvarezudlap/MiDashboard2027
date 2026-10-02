@@ -46,7 +46,7 @@
                                 }
                                 <td class="font-medium">@r.Tarea</td>
                                 <td>
-                                    <span class="badge badge-sm gap-1 border-0 text-white" style="background-color: @r.CategoriaColor">@r.CategoriaNombre</span>
+                                    <span class="badge badge-sm gap-1 border-0" style="background-color: @r.CategoriaColor; color: @ColorTexto.Sobre(r.CategoriaColor)">@r.CategoriaNombre</span>
                                 </td>
                                 <td class="whitespace-nowrap text-right">@TiempoFormato.Horas(r.Minutos)</td>
                                 <td class="max-w-xs truncate text-base-content/70" title="@r.Comentarios">@r.Comentarios</td>
